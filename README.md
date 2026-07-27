@@ -12,7 +12,7 @@
 ![Grounding](https://img.shields.io/badge/%EA%B7%B8%EB%9D%BC%EC%9A%B4%EB%94%A9%20%EC%A0%95%ED%99%95%EB%8F%84-84.6%25-fde047)
 ![Guard](https://img.shields.io/badge/%ED%99%98%EA%B0%81%20%EA%B0%80%EB%93%9C-%EB%82%B4%EC%9E%A5-16a34a)
 
-2026년 리부트AI활용대회 산출물 · 입력 정보는 외부 전송 없이 로컬에서만 처리됩니다
+입력 정보는 외부 전송 없이 로컬에서만 처리됩니다
 
 </div>
 
@@ -37,6 +37,7 @@
 ## 3. 시스템 아키텍처
 
 ```mermaid
+%%{init: {"flowchart": {"curve": "step"}}}%%
 flowchart TB
     USER(["👤 사용자<br/>현재 냉매 · 용도 · 우선순위"])
 
