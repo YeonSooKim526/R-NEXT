@@ -5,7 +5,6 @@
 from __future__ import annotations
 
 import base64
-import html
 import json
 from datetime import datetime
 from pathlib import Path
@@ -13,6 +12,7 @@ from pathlib import Path
 import streamlit as st
 
 import advisor
+import guard
 import llm
 import loader
 
@@ -136,6 +136,36 @@ st.markdown(
     [data-testid="stSidebar"] [data-baseweb="select"] div { font-size: 0.8rem; }
     [data-testid="stSidebar"] input { font-size: 0.8rem; }
     [data-testid="stSidebar"] button p { font-size: 0.85rem !important; }
+    /* 사이드바 상담 기록(tertiary 버튼): 평소엔 좌측 정렬 일반 텍스트,
+       호버·클릭 시에만 테두리 없는 연블루 블록 — ChatGPT 목록 스타일 */
+    [data-testid="stSidebar"] [data-testid="stBaseButton-tertiary"] {
+        justify-content: flex-start !important;
+        padding: 0.18rem 0.45rem !important;
+        border-radius: 0.45rem !important;
+        color: #475569 !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stBaseButton-tertiary"]:hover,
+    [data-testid="stSidebar"] [data-testid="stBaseButton-tertiary"]:active {
+        background: #e3efff !important;
+        color: #1e3a8a !important;
+    }
+    /* 버전별 DOM 차이 대비: kind 속성·내부 컨테이너까지 좌측 정렬 강제 */
+    [data-testid="stSidebar"] button[kind="tertiary"] {
+        justify-content: flex-start !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stBaseButton-tertiary"] > div,
+    [data-testid="stSidebar"] button[kind="tertiary"] > div,
+    [data-testid="stSidebar"] [data-testid="stBaseButton-tertiary"] [data-testid="stMarkdownContainer"],
+    [data-testid="stSidebar"] button[kind="tertiary"] [data-testid="stMarkdownContainer"] {
+        width: 100% !important;
+        text-align: left !important;
+        margin: 0 !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stBaseButton-tertiary"] p,
+    [data-testid="stSidebar"] button[kind="tertiary"] p {
+        font-size: 0.72rem !important;
+        text-align: left !important;
+    }
     /* 출처 블록: 사이드바 흐름 최하단, 작은 폰트 (고정 배치는 폭 불일치·겹침을 유발해 제거) */
     .rnext-sources {
         font-size: 0.68rem;
@@ -188,6 +218,22 @@ def log_turn(query: str, result) -> None:
             f.write(json.dumps(entry, ensure_ascii=False) + "\n")
     except OSError:
         pass
+
+
+def log_title(query: str) -> str:
+    """상담 기록 목록에 쓸 짧은 제목 — ChatGPT식 대화 제목 방식.
+
+    상담 폼 입력('현재 냉매: … / 용도: … / …')은 핵심만 추려 제목화하고,
+    자유 질문은 앞부분을 잘라 쓴다.
+    """
+    if query.startswith("현재 냉매:"):
+        try:
+            parts = [p.split(":", 1)[1].strip() for p in query.split("/")]
+            return f"{parts[0]} · {parts[1]} 전환 상담"
+        except IndexError:
+            pass
+    t = query.strip().rstrip("?.!").strip()
+    return t if len(t) <= 26 else t[:25] + "…"
 
 
 def recent_logs(limit: int = 6) -> list[dict]:
@@ -267,15 +313,23 @@ with st.sidebar:
                 unsafe_allow_html=True)
     logs = recent_logs()
     if logs:
-        rows = []
-        for e in logs:
-            when = e.get("time", "")[5:16].replace("T", " ")
-            q = html.escape(e.get("query", ""))
-            q = q if len(q) <= 34 else q[:33] + "…"
-            rows.append(f'<div style="margin:0.3rem 0;">'
-                        f'<span style="color:#94a3b8;">{when}</span><br>{q}</div>')
-        st.markdown('<div style="font-size:0.8rem;color:#475569;line-height:1.55;">'
-                    + "".join(rows) + "</div>", unsafe_allow_html=True)
+        # 기록을 누르면 해당 상담이 채팅창에 다시 열린다.
+        # tertiary = 테두리·배경 없는 텍스트형 버튼(기본 좌측 정렬).
+        for i, e in enumerate(logs):
+            if st.button(log_title(e.get("query", "")), key=f"log-{i}",
+                         type="tertiary", use_container_width=True):
+                g = e.get("guard", {})
+                report = guard.GuardReport(
+                    is_refusal=g.get("is_refusal", False),
+                    gwp_mismatches=g.get("gwp_mismatches", []),
+                    safety_mismatches=g.get("safety_mismatches", []),
+                    unknown_refs=g.get("unknown_refs", []),
+                    offtable_props=g.get("offtable_props", []),
+                )
+                st.session_state.history = [
+                    {"role": "user", "content": e.get("query", "")},
+                    {"role": "assistant", "content": e.get("answer", ""), "report": report},
+                ]
     else:
         st.markdown('<div style="font-size:0.8rem;color:#94a3b8;">아직 상담 기록이 없습니다.</div>',
                     unsafe_allow_html=True)

@@ -1,0 +1,24 @@
+{
+  "summary": {
+    "model": "exaone3.5:7.8b",
+    "num_ctx": 16384,
+    "timestamp": "2026-07-27T14:38:01",
+    "n_items": 1,
+    "grounding_accuracy": 1.0,
+    "hallucination_rate": 0.0,
+    "trap_refusal": "0/0",
+    "elapsed_sec": 30.6
+  },
+  "results": [
+    {
+      "id": "E01",
+      "type": "fact",
+      "question": "R-410A의 GWP100은 얼마인가요?",
+      "answer": "R-410A의 GWP100 값은 **2088**입니다 (AR4 기준). \n\n이 정보는 제공된 냉매 레퍼런스 표에서 확인 가능합니다.",
+      "passed": true,
+      "hallucination": false,
+      "gwp_mismatches": [],
+      "safety_mismatches": []
+    }
+  ]
+}
