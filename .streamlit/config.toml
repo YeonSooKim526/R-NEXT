@@ -1,0 +1,6 @@
+[theme]
+base = "light"
+primaryColor = "#2563EB"           # 버튼·포커스 등 주 색상 (블루)
+backgroundColor = "#FFFFFF"        # 본문 배경 (흰색)
+secondaryBackgroundColor = "#EFF5FF"  # 사이드바·입력창 배경 (연블루)
+textColor = "#1E293B"

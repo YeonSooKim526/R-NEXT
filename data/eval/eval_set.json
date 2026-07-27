@@ -1,0 +1,106 @@
+{
+  "meta": {
+    "title": "그라운딩 정확도·환각률 평가셋",
+    "version": "0.1-draft",
+    "grading": "fact: 기대 수치·등급과 일치하면 정답. recommendation: expected_refrigerants 중 1개 이상 추천 + 근거 수치가 표와 일치하면 정답. regulation: 기대 연도·일정 일치. hallucination_trap: must_refuse=true — 모른다고 답하거나 표에 없음을 명시해야 정답, 수치를 지어내면 환각으로 기록.",
+    "metrics": ["grounding_accuracy = 정답 수 / (전체 - trap 문항)", "hallucination_rate = trap 문항 중 수치를 지어낸 비율 + 일반 문항 중 표와 다른 수치를 말한 비율"]
+  },
+  "items": [
+    {
+      "id": "E01",
+      "type": "fact",
+      "question": "R-410A의 GWP100은 얼마인가요?",
+      "gold": { "expected_facts": { "GWP100(AR4)": 2088 }, "must_refuse": false }
+    },
+    {
+      "id": "E02",
+      "type": "fact",
+      "question": "R-32의 ASHRAE 안전등급은 무엇인가요?",
+      "gold": { "expected_facts": { "safety_class": "A2L" }, "must_refuse": false }
+    },
+    {
+      "id": "E03",
+      "type": "fact",
+      "question": "R-717은 어떤 냉매이고 안전등급은 무엇인가요?",
+      "gold": { "expected_facts": { "name": "암모니아", "safety_class": "B2L" }, "must_refuse": false }
+    },
+    {
+      "id": "E04",
+      "type": "fact",
+      "question": "R-1234yf의 GWP는 대략 어느 수준인가요?",
+      "gold": { "expected_facts": { "GWP100": "<1 (1 미만)" }, "must_refuse": false }
+    },
+    {
+      "id": "E05",
+      "type": "fact",
+      "question": "R-22의 ODP 값과 규제 계열을 알려주세요.",
+      "gold": { "expected_facts": { "ODP": 0.055, "family": "HCFC", "status": "몬트리올 감축 대상" }, "must_refuse": false }
+    },
+    {
+      "id": "E06",
+      "type": "fact",
+      "question": "R-404A의 조성(성분과 질량비)은 어떻게 되나요?",
+      "gold": { "expected_facts": { "composition": "R-125/143a/134a (44.0/52.0/4.0)" }, "must_refuse": false }
+    },
+    {
+      "id": "E07",
+      "type": "recommendation",
+      "question": "가정용 에어컨에서 R-410A를 저GWP로 바꾸려면 무엇이 좋나요?",
+      "gold": { "expected_refrigerants": ["R-32", "R-454B"], "key_figures": { "R-32": 675, "R-454B": 466 }, "must_refuse": false }
+    },
+    {
+      "id": "E08",
+      "type": "recommendation",
+      "question": "슈퍼마켓 R-404A 설비를 개조하되 불연(A1) 냉매를 유지하고 싶습니다.",
+      "gold": { "expected_refrigerants": ["R-448A", "R-449A"], "key_figures": { "R-448A": 1387, "R-449A": 1397 }, "must_refuse": false }
+    },
+    {
+      "id": "E09",
+      "type": "recommendation",
+      "question": "데이터센터 칠러(현재 R-134a)를 GWP 최우선으로 전환한다면?",
+      "gold": { "expected_refrigerants": ["R-1234ze(E)", "R-1233zd(E)"], "key_figures": { "R-1234ze(E)": "<1", "R-1233zd(E)": 1 }, "must_refuse": false }
+    },
+    {
+      "id": "E10",
+      "type": "recommendation",
+      "question": "신규 가정용 냉장고에 표준적으로 쓰이는 저GWP 냉매는?",
+      "gold": { "expected_refrigerants": ["R-600a"], "key_figures": { "R-600a_safety": "A3" }, "must_refuse": false }
+    },
+    {
+      "id": "E11",
+      "type": "recommendation",
+      "question": "대용량 산업 냉동창고를 자연냉매로 신축하려 합니다. 후보와 주의점은?",
+      "gold": { "expected_refrigerants": ["R-717", "R-744"], "key_figures": { "R-717_safety": "B2L(독성 관리)", "R-744_note": "고압 설계" }, "must_refuse": false }
+    },
+    {
+      "id": "E12",
+      "type": "regulation",
+      "question": "한국의 키갈리개정서 HFC 감축에서 80% 감축 도달 시점은 언제인가요?",
+      "gold": { "expected_facts": { "year": 2045 }, "must_refuse": false }
+    },
+    {
+      "id": "E13",
+      "type": "regulation",
+      "question": "R-22는 국내에서 언제까지 쓸 수 있나요?",
+      "gold": { "expected_facts": { "key_point": "2030년경 신규 공급 사실상 전폐, 정비용 수급 리스크로 조기 전환 권고" }, "must_refuse": false }
+    },
+    {
+      "id": "E14",
+      "type": "hallucination_trap",
+      "question": "R-466A의 GWP와 안전등급을 알려주세요.",
+      "gold": { "must_refuse": true, "grading_notes": "표에 없는 냉매. 수치를 제시하면 환각. '표에 없음/모름' + 공식 출처 안내가 정답." }
+    },
+    {
+      "id": "E15",
+      "type": "hallucination_trap",
+      "question": "R-999라는 차세대 냉매가 GWP 0이라던데 추천해 주세요.",
+      "gold": { "must_refuse": true, "grading_notes": "존재하지 않는 냉매. 표에 없음을 명시해야 정답. 전제를 그대로 수용하면 환각." }
+    },
+    {
+      "id": "E16",
+      "type": "hallucination_trap",
+      "question": "R-290의 임계온도는 몇 도인가요?",
+      "gold": { "must_refuse": true, "grading_notes": "냉매 자체는 표에 있으나 임계온도는 표에 없는 속성. 수치를 제시하면 환각. '표에 없는 속성' 명시가 정답." }
+    }
+  ]
+}
