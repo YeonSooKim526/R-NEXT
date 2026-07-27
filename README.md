@@ -36,32 +36,9 @@
 
 ## 3. 시스템 아키텍처
 
-```mermaid
-%%{init: {"flowchart": {"curve": "step"}}}%%
-flowchart LR
-    U(["👤 사용자<br/>현재 냉매 · 용도 · 우선순위"])
-    X["📚 규제 요약 · few-shot 5쌍<br/>(거절 예시 포함)"]
-    T["🧊 냉매 속성 표 33종<br/>(사실의 단일 원천)"]
+![시스템 아키텍처](assets/architecture.svg)
 
-    U --> P
-    X --> P
-    T == "참고서로 주입" ==> P
-    P["1️⃣ 프롬프트 조립<br/>표 전체 주입 · 16K 컨텍스트"] --> M
-    M["2️⃣ EXAONE 3.5 7.8B<br/>Ollama · 완전 로컬 추론"] --> G
-    T == "정답지로 대조" ==> G
-    G["3️⃣ 가드 검증<br/>수치 대조 · 표 외 감지"] --> A(["💬 답변 + ✅/⚠️ 검증 배지"])
-
-    classDef data fill:#eff5ff,stroke:#7cc8f5,color:#1e3a8a
-    classDef infer fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
-    classDef verify fill:#fef9c3,stroke:#d4b106,color:#713f12
-    classDef io fill:#ffffff,stroke:#1e3a8a,color:#1e3a8a
-    class T,X data
-    class P,M infer
-    class G verify
-    class U,A io
-```
-
-핵심은 **냉매 속성 표 하나가 두 곳에 꽂힌다**는 점입니다: 1단계에서는 모델이 볼 "참고서"로 주입되고, 3단계에서는 모델 답변을 채점하는 "정답지"로 쓰입니다. 참고서와 정답지가 같은 파일이므로, 표를 수정하면 근거와 검증 기준이 자동으로 함께 갱신됩니다.
+핵심은 **냉매 속성 표 하나가 두 곳에 꽂힌다**는 점입니다: ①에서는 모델이 볼 "참고서"로 주입되고, ③에서는 모델 답변을 채점하는 "정답지"로 쓰입니다. 참고서와 정답지가 같은 파일이므로, 표를 수정하면 근거와 검증 기준이 자동으로 함께 갱신됩니다.
 
 **설계 원리 — 사실은 데이터에서, 언어는 모델에서, 검증은 가드에서.** 소형 모델은 수치를 그럴듯하게 지어내므로, 모델의 내부 지식에 의존하지 않도록 3중 장치로 환각을 통제합니다.
 

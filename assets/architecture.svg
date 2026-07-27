@@ -1,0 +1,66 @@
+<svg viewBox="0 0 1440 430" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Segoe UI', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrN" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1e3a8a"/>
+    </marker>
+  </defs>
+
+  <!-- ══ 연결선 (직각) ══ -->
+  <!-- 사용자 → 조립 (위에서 아래로) -->
+  <path d="M 270 62 H 470 V 152" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#arr)"/>
+  <!-- 규제·few-shot → 조립 -->
+  <path d="M 270 196 H 352" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#arr)"/>
+  <!-- 냉매 표 → 조립 (참고서) -->
+  <path d="M 270 318 H 470 V 242" fill="none" stroke="#1e3a8a" stroke-width="3.5" marker-end="url(#arrN)"/>
+  <!-- 냉매 표 → 가드 (정답지) -->
+  <path d="M 270 336 H 1040 V 242" fill="none" stroke="#1e3a8a" stroke-width="3.5" marker-end="url(#arrN)"/>
+  <!-- 파이프라인 직결 -->
+  <path d="M 580 196 H 642" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#arr)"/>
+  <path d="M 870 196 H 932" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#arr)"/>
+  <path d="M 1160 196 H 1222" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#arr)"/>
+
+  <!-- ══ 연결선 라벨 (선 아래·옆, 겹침 없음) ══ -->
+  <text x="484" y="292" font-size="15" font-weight="700" fill="#1e3a8a">참고서로 주입</text>
+  <text x="486" y="312" font-size="12.5" fill="#64748b">냉매 표 전체를 컨텍스트에</text>
+  <text x="655" y="362" font-size="15" font-weight="700" fill="#1e3a8a" text-anchor="middle">정답지로 대조</text>
+  <text x="655" y="381" font-size="12.5" fill="#64748b" text-anchor="middle">답변 속 수치를 같은 표로 자동 검증</text>
+
+  <!-- ══ 노드 ══ -->
+  <!-- 사용자 -->
+  <rect x="40" y="30" width="230" height="64" rx="32" fill="#ffffff" stroke="#1e3a8a" stroke-width="1.6"/>
+  <text x="155" y="57" font-size="16" font-weight="700" fill="#1e3a8a" text-anchor="middle">👤 사용자</text>
+  <text x="155" y="78" font-size="13" fill="#64748b" text-anchor="middle">현재 냉매 · 용도 · 우선순위</text>
+
+  <!-- 규제 요약 · few-shot -->
+  <rect x="40" y="160" width="230" height="72" rx="10" fill="#eff5ff" stroke="#7cc8f5" stroke-width="1.5"/>
+  <text x="155" y="190" font-size="15.5" font-weight="700" fill="#1e3a8a" text-anchor="middle">📚 규제 요약 · few-shot 5쌍</text>
+  <text x="155" y="211" font-size="13" fill="#64748b" text-anchor="middle">(거절 예시 포함)</text>
+
+  <!-- 냉매 속성 표 -->
+  <rect x="40" y="300" width="230" height="72" rx="10" fill="#eff5ff" stroke="#7cc8f5" stroke-width="2.6"/>
+  <text x="155" y="330" font-size="15.5" font-weight="700" fill="#1e3a8a" text-anchor="middle">🧊 냉매 속성 표 33종</text>
+  <text x="155" y="351" font-size="13" fill="#64748b" text-anchor="middle">사실의 단일 원천</text>
+
+  <!-- 1 프롬프트 조립 -->
+  <rect x="360" y="160" width="220" height="72" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.6"/>
+  <text x="470" y="190" font-size="15.5" font-weight="700" fill="#1e3a8a" text-anchor="middle">① 프롬프트 조립</text>
+  <text x="470" y="211" font-size="13" fill="#64748b" text-anchor="middle">표 전체 주입 · 16K 컨텍스트</text>
+
+  <!-- 2 EXAONE -->
+  <rect x="650" y="160" width="220" height="72" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.6"/>
+  <text x="760" y="190" font-size="15.5" font-weight="700" fill="#1e3a8a" text-anchor="middle">② EXAONE 3.5 7.8B</text>
+  <text x="760" y="211" font-size="13" fill="#64748b" text-anchor="middle">Ollama · 완전 로컬 추론</text>
+
+  <!-- 3 가드 검증 -->
+  <rect x="940" y="160" width="220" height="72" rx="10" fill="#fef9c3" stroke="#d4b106" stroke-width="1.6"/>
+  <text x="1050" y="190" font-size="15.5" font-weight="700" fill="#713f12" text-anchor="middle">③ 가드 검증</text>
+  <text x="1050" y="211" font-size="13" fill="#8a6d1a" text-anchor="middle">수치 대조 · 표 외 감지</text>
+
+  <!-- 답변 -->
+  <rect x="1230" y="164" width="180" height="64" rx="30" fill="#ffffff" stroke="#1e3a8a" stroke-width="1.6"/>
+  <text x="1320" y="191" font-size="15" font-weight="700" fill="#1e3a8a" text-anchor="middle">💬 답변 출력</text>
+  <text x="1320" y="212" font-size="13" fill="#64748b" text-anchor="middle">✅ / ⚠️ 검증 배지</text>
+</svg>
