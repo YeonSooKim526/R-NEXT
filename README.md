@@ -38,40 +38,33 @@
 
 ```mermaid
 %%{init: {"flowchart": {"curve": "step"}}}%%
-flowchart TB
-    USER(["👤 사용자<br/>현재 냉매 · 용도 · 우선순위"])
-
-    subgraph DATA["데이터 계층 — 사실의 단일 원천"]
-        direction LR
-        R["냉매 속성 표 33종<br/>refrigerants.json"]
-        REG["규제 요약<br/>키갈리 · 환경부 · EU F-gas"]
-        FS["few-shot 골드 5쌍<br/>(거절 예시 2종 포함)"]
+flowchart LR
+    subgraph D["📚 큐레이션 데이터 — 사실의 단일 원천"]
+        direction TB
+        T["🧊 냉매 속성 표 33종"]
+        X["규제 요약 · few-shot 5쌍<br/>(거절 예시 포함)"]
     end
 
-    subgraph INFER["추론 계층 — 언어와 추론만 담당"]
-        P["프롬프트 조립<br/>제약 규칙 + 표 전체 주입 (16K 컨텍스트)"]
-        M["EXAONE 3.5 7.8B<br/>Ollama · 완전 로컬"]
-    end
+    U(["👤 사용자<br/>현재 냉매 · 용도 · 우선순위"]) --> P
+    P["① 프롬프트 조립<br/>표 전체 주입 · 16K 컨텍스트"] --> M
+    M["② EXAONE 3.5 7.8B<br/>Ollama · 완전 로컬 추론"] --> G
+    G["③ 가드 검증<br/>수치 대조 · 표 외 감지"] --> A(["💬 답변 + ✅/⚠️ 검증 배지"])
 
-    subgraph VERIFY["검증 계층 — 결정론적 환각 방어"]
-        G["가드<br/>답변 수치 ↔ 표 자동 대조<br/>표 외 냉매·속성 감지"]
-    end
-
-    UI["💬 Streamlit UI<br/>구조화 답변 + ✅/⚠️ 검증 배지 + 상담 기록"]
-
-    USER --> P
-    DATA --> P --> M --> G --> UI --> USER
-    R -. "같은 표가 가드의 정답지" .-> G
+    T == "참고서 역할<br/>(컨텍스트 주입)" ==> P
+    X --> P
+    T == "정답지 역할<br/>(답변 수치 대조)" ==> G
 
     classDef data fill:#eff5ff,stroke:#7cc8f5,color:#1e3a8a
     classDef infer fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
     classDef verify fill:#fef9c3,stroke:#d4b106,color:#713f12
-    classDef ui fill:#ffffff,stroke:#1e3a8a,color:#1e3a8a
-    class R,REG,FS data
+    classDef io fill:#ffffff,stroke:#1e3a8a,color:#1e3a8a
+    class T,X data
     class P,M infer
     class G verify
-    class UI ui
+    class U,A io
 ```
+
+핵심은 **냉매 속성 표 하나가 두 곳에 꽂힌다**는 점입니다: ①에서는 모델이 볼 "참고서"로 주입되고, ③에서는 모델 답변을 채점하는 "정답지"로 쓰입니다. 참고서와 정답지가 같은 파일이므로, 표를 수정하면 근거와 검증 기준이 자동으로 함께 갱신됩니다.
 
 **설계 원리 — 사실은 데이터에서, 언어는 모델에서, 검증은 가드에서.** 소형 모델은 수치를 그럴듯하게 지어내므로, 모델의 내부 지식에 의존하지 않도록 3중 장치로 환각을 통제합니다.
 
@@ -80,8 +73,6 @@ flowchart TB
 | ① 전표 주입 그라운딩 | 냉매 33종 속성 표 전체를 컨텍스트에 직접 주입 | 검색(RAG) 실패라는 오류 원천 자체가 없음 |
 | ② 거절 few-shot | "표에 없으면 모른다고 답한 전례"를 대화 턴으로 주입 | 표 밖 질문(가상 냉매·미수록 속성)에 거절 유도 |
 | ③ 결정론적 가드 | 답변 속 GWP·안전등급을 표와 자동 대조, 표 외 냉매·속성 답변 감지 | 모델이 놓친 환각도 UI 경고로 표면화 |
-
-같은 JSON 파일이 프롬프트(참고서)와 가드(정답지)를 겸하므로 두 계층이 어긋날 수 없습니다.
 
 ## 4. 성능 평가
 
